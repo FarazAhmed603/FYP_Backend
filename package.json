@@ -1,5 +1,5 @@
 {
-  "name": "service_app",
+  "name": "craft",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Shahswark/service_app.git"
+    "url": "https://github.com/FarazAhmed603/FYP_Backend.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Shahswark/service_app/issues"
+    "url": "https://github.com/FarazAhmed603/FYP_Backend.git"
   },
-  "homepage": "https://github.com/Shahswark/service_app#readme",
+  "homepage": "https://github.com/FarazAhmed603/FYP_Backend.git#readme",
   "dependencies": {
     "axios": "^1.2.1",
     "bcryptjs": "^2.4.3",
