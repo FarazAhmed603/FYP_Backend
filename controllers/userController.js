@@ -149,7 +149,7 @@ const forgetpassword = async (req, res, next) => {
     if (isCPwdValid.error) {
       return res.status(400).send(isCPwdValid);
     }
-    const user = await Users.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(404).send({
         message: `No user with email found`,
@@ -225,9 +225,9 @@ const sendOtpMail = async (req, res, next) => {
 };
 //verify OTP
 const verifyOtp = async (req, res, next) => {
-  const { email, otp } = req.body;
+  const otp = req.body.otp;
   try {
-    const user = await Users.findOne({ where: { email } });
+    const user = await User.findOne({ email: req.body.email });
     if (!user) {
       return res.status(404).send({
         message: `No user with email found`,

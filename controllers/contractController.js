@@ -62,7 +62,7 @@ const updateContract = async (req, res) => {
       });
     }
     (fetchcontract.workerid = req.body.workerid),
-    (fetchcontract.category = req.body.category),
+      (fetchcontract.category = req.body.category),
       (fetchcontract.title = req.body.title),
       (fetchcontract.description = req.body.description),
       (fetchcontract.worktype = req.body.worktype),

@@ -3,9 +3,9 @@ const mongoose = require("mongoose");
 
 //creating a schema for contract
 const ContractSchema = new mongoose.Schema(
-  { 
-    userid:{type:String,required:true},
-    workerid:{type:String,required:false},
+  {
+    userid: { type: String, required: true },
+    workerid: { type: String, required: false },
     category: { type: String, required: true },
     title: { type: String, required: true },
     description: { type: String, required: true },
