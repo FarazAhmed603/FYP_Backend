@@ -14,14 +14,17 @@ router.get("/users", userController.getAllUser);
 //Update user
 router.put("/updateuser/:_id", userController.updateUser);
 
+//verify email
+router.get("/verifyemail/", userController.verifyemail);
+
 //Login
-router.get("/login", userController.loginUser);
+router.post("/login", userController.loginUser);
 
 //send OTP
 router.get("/sendotp", userController.sendOtpMail);
 
 //verify OTP
-router.post("/verifyotp", userController.verifyOtp);
+router.put("/verifyotp", userController.verifyOtp);
 
 //forget password
 router.put("/forgetpassword", userController.forgetpassword);

@@ -88,13 +88,19 @@ const deleteUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const fetchuser = await User.findOne({ email: req.body.email });
+
     if (!fetchuser) {
       return res.status(404).send({
         message: `No user found`,
         error: true,
       });
     }
-
+    if (!fetchuser.otp) {
+      return res.status(404).send({
+        message: `verify your email`,
+        error: true,
+      });
+    }
     const isPasswordValid = await bcrypt.compare(
       req.body.password,
       fetchuser.password
@@ -126,36 +132,38 @@ const loginUser = async (req, res) => {
   }
 };
 
-//forget password
-const forgetpassword = async (req, res, next) => {
+//verify email
+const verifyemail = async (req, res) => {
   try {
-    const { email, newPassword, confirmNewPassword } = req.body;
-    const paramsToVerify = ["newPassword", "confirmNewPassword"];
-    const areParamsMissing = verifyBodyParams(paramsToVerify, req.body);
-    if (areParamsMissing.error) {
-      return res.status(400).send(areParamsMissing);
-    }
-    if (newPassword != confirmNewPassword) {
-      return res.status(400).send({
-        message: `Passwords must match`,
+    const Emaill = req.param('_email');
+    if (!Emaill) {
+      return res.status(404).send({
+        message: `parameters cannot be empty`,
         error: true,
       });
     }
-    const isPwdValid = verifyPassword(newPassword);
-    if (isPwdValid.error) {
-      return res.status(400).send(isPwdValid);
-    }
-    const isCPwdValid = verifyPassword(confirmNewPassword);
-    if (isCPwdValid.error) {
-      return res.status(400).send(isCPwdValid);
-    }
-    const user = await User.findOne({ where: { email } });
-    if (!user) {
+    const fetchuser = await User.findOne({ email: Emaill })
+    if (!fetchuser) {
       return res.status(404).send({
         message: `No user with email found`,
         error: true,
       });
     }
+    else {
+      return res.status(200).send({
+        message: "Email exsits"
+      })
+    }
+  } catch {
+    console.error(err.message);
+  }
+}
+
+//forget password
+const forgetpassword = async (req, res, next) => {
+  try {
+    const { newPassword } = req.body;
+    const user = await User.findOne({ email: req.body.email });
     const hash = await bcrypt.hash(newPassword, 10);
     user.password = hash;
     await user.save();
@@ -180,6 +188,7 @@ const genrateOtp = () => {
     return err;
   }
 };
+
 //send OTP
 const sendOtpMail = async (req, res, next) => {
   const email = req.body.email;
@@ -223,9 +232,10 @@ const sendOtpMail = async (req, res, next) => {
     res.status(400).send("Internal server error " + err);
   }
 };
+
 //verify OTP
 const verifyOtp = async (req, res, next) => {
-  const otp = req.body.otp;
+  const OTP = req.body.otp;
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) {
@@ -234,15 +244,20 @@ const verifyOtp = async (req, res, next) => {
         error: true,
       });
     }
-    if (otp != user.otp) {
+    if (OTP == user.otp || user.otp == "0") {
+      user.otp = "0";
+      await user.save();
+      return res.status(200).send({
+        message: `OTP verified successfully`,
+        email: req.body.email,
+      });
+    }
+    else {
       return res.status(404).send({
         message: `Invalid OTP`,
         error: true,
       });
     }
-    return res.status(200).send({
-      message: `OTP verified successfully`,
-    });
   } catch (err) {
     res.status(400).send("Internal server error " + err);
   }
@@ -258,4 +273,5 @@ module.exports = {
   forgetpassword,
   getAllUser,
   deleteUser,
+  verifyemail,
 };
