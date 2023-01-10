@@ -21,7 +21,7 @@ router.get("/verifyemail/", userController.verifyemail);
 router.post("/login", userController.loginUser);
 
 //send OTP
-router.get("/sendotp", userController.sendOtpMail);
+router.post("/sendotp", userController.sendOtpMail);
 
 //verify OTP
 router.put("/verifyotp", userController.verifyOtp);
