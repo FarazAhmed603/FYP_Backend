@@ -135,7 +135,7 @@ const loginUser = async (req, res) => {
 //verify email
 const verifyemail = async (req, res) => {
   try {
-    const Emaill = req.param('_email');
+    const Emaill = req.param('email');
     if (!Emaill) {
       return res.status(404).send({
         message: `parameters cannot be empty`,
@@ -163,6 +163,12 @@ const verifyemail = async (req, res) => {
 const forgetpassword = async (req, res, next) => {
   try {
     const { newPassword } = req.body;
+    if (!newPassword) {
+      return res.status(404).send({
+        message: `parameters cannot be empty`,
+        error: true,
+      });
+    }
     const user = await User.findOne({ email: req.body.email });
     const hash = await bcrypt.hash(newPassword, 10);
     user.password = hash;
