@@ -16,6 +16,8 @@ const userSchema = new mongoose.Schema(
     profile: { type: String, required: false },
     description: { type: String, required: false },
     notification: [{ title: { type: String } }],
+    otpverify: { type: Boolean, required: false },
+
   },
 
   { collection: "users" }

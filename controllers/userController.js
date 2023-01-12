@@ -22,12 +22,20 @@ const createUser = async (req, res) => {
       profile: req.body.profile,
       description: req.body.description,
       notification: req.body.notification,
+      otpverify: false,
     });
     res.status(200).send(newuser);
   } catch (err) {
-    res.status(400).send("data is not found " + err);
+    if (await User.findOne({ email: req.body.email })) {
+      res.status(400).send({
+        message: "Email already exists",
+        error: true
+      })
+    }
+    else { res.status(400).send("data is not found " + err); }
   }
 };
+
 //get all users
 const getAllUser = async (req, res) => {
   try {
@@ -43,6 +51,7 @@ const getUser = async (req, res) => {
   try {
     const fetchuser = await User.findById(req.params._id);
     res.status(200).send(fetchuser);
+    console.log(fetchuser.otpverify)
   } catch (err) {
     res.status(400).send("user not found " + err);
   }
@@ -76,11 +85,13 @@ const updateUser = async (req, res) => {
 
 //delete user
 const deleteUser = async (req, res) => {
+
   try {
     const deleteuser = await User.deleteOne({ _id: req.params._id });
+    console.log(req.params._id)
     res.status(200).json({ Status: "successfull", message: "record deleted" });
   } catch (err) {
-    res.status(400).send("Internal server error " + err);
+    res.status(400).send("Internal server error " + err + req.params._id);
   }
 };
 
@@ -88,14 +99,13 @@ const deleteUser = async (req, res) => {
 const loginUser = async (req, res) => {
   try {
     const fetchuser = await User.findOne({ email: req.body.email });
-
     if (!fetchuser) {
       return res.status(404).send({
         message: `No user found`,
         error: true,
       });
     }
-    if (!fetchuser.otp) {
+    if (!fetchuser.otpverify) {
       return res.status(404).send({
         message: `verify your email`,
         error: true,
@@ -106,7 +116,11 @@ const loginUser = async (req, res) => {
       fetchuser.password
     );
     if (!isPasswordValid) {
-      return res.status(400).send("Invalid credentials " + err);
+      return res.status(400).send({
+        message: "Invalid credentials ",
+        error: true
+      }
+      );
     }
 
     const token = jwt.sign(
@@ -128,7 +142,7 @@ const loginUser = async (req, res) => {
 
     res.status(200).json({ Status: "Logged IN", Token: token });
   } catch (err) {
-    res.status(400).send("Internal server error " + err);
+    res.status(400).send("Internal server error  " + err);
   }
 };
 
@@ -250,8 +264,8 @@ const verifyOtp = async (req, res, next) => {
         error: true,
       });
     }
-    if (OTP == user.otp || user.otp == "0") {
-      user.otp = "0";
+    if (OTP == user.otp) {
+      user.otpverify = true;
       await user.save();
       return res.status(200).send({
         message: `OTP verified successfully`,
