@@ -29,10 +29,11 @@ const createUser = async (req, res) => {
     if (await User.findOne({ email: req.body.email })) {
       res.status(400).send({
         message: "Email already exists",
-        error: true
-      })
+        error: true,
+      });
+    } else {
+      res.status(400).send("data is not found " + err);
     }
-    else { res.status(400).send("data is not found " + err); }
   }
 };
 
@@ -51,7 +52,7 @@ const getUser = async (req, res) => {
   try {
     const fetchuser = await User.findById(req.params._id);
     res.status(200).send(fetchuser);
-    console.log(fetchuser.otpverify)
+    console.log(fetchuser.otpverify);
   } catch (err) {
     res.status(400).send("user not found " + err);
   }
@@ -85,10 +86,9 @@ const updateUser = async (req, res) => {
 
 //delete user
 const deleteUser = async (req, res) => {
-
   try {
     const deleteuser = await User.deleteOne({ _id: req.params._id });
-    console.log(req.params._id)
+    console.log(req.params._id);
     res.status(200).json({ Status: "successfull", message: "record deleted" });
   } catch (err) {
     res.status(400).send("Internal server error " + err + req.params._id);
@@ -118,9 +118,8 @@ const loginUser = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(400).send({
         message: "Invalid credentials ",
-        error: true
-      }
-      );
+        error: true,
+      });
     }
 
     const token = jwt.sign(
@@ -149,29 +148,21 @@ const loginUser = async (req, res) => {
 //verify email
 const verifyemail = async (req, res) => {
   try {
-    const Emaill = req.param('email');
-    if (!Emaill) {
-      return res.status(404).send({
-        message: `parameters cannot be empty`,
-        error: true,
-      });
-    }
-    const fetchuser = await User.findOne({ email: Emaill })
+    const fetchuser = await User.findOne({ email: req.params.email });
     if (!fetchuser) {
       return res.status(404).send({
         message: `No user with email found`,
         error: true,
       });
-    }
-    else {
+    } else {
       return res.status(200).send({
-        message: "Email exsits"
-      })
+        message: "Email exsits",
+      });
     }
   } catch {
     console.error(err.message);
   }
-}
+};
 
 //forget password
 const forgetpassword = async (req, res, next) => {
@@ -271,8 +262,7 @@ const verifyOtp = async (req, res, next) => {
         message: `OTP verified successfully`,
         email: req.body.email,
       });
-    }
-    else {
+    } else {
       return res.status(404).send({
         message: `Invalid OTP`,
         error: true,

@@ -15,7 +15,7 @@ router.get("/users", userController.getAllUser);
 router.put("/updateuser/:_id", userController.updateUser);
 
 //verify email
-router.get("/verifyemail/", userController.verifyemail);
+router.get("/verifyemail/:email", userController.verifyemail);
 
 //Login
 router.post("/login", userController.loginUser);
