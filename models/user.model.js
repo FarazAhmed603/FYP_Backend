@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     phone: { type: String, required: true },
+    cnic: { type: String, required: false },
     loaction: { type: String, required: false },
     skill: [{ type: String, required: false }],
     otp: { type: String, required: false },
@@ -17,7 +18,11 @@ const userSchema = new mongoose.Schema(
     description: { type: String, required: false },
     notification: [{ title: { type: String } }],
     otpverify: { type: Boolean, required: false },
-
+    userstatus: {
+      type: String,
+      enum: ["pending", "block", "verified"],
+      required: false,
+    },
   },
 
   { collection: "users" }

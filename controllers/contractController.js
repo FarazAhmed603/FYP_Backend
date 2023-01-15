@@ -94,14 +94,3 @@ module.exports = {
   updateContract,
 };
 
-
-//node.js
-// verify user for skill provider
-// delete skill
-
-//react.native
-// forget pass
-// 
-
-//react.js
-// view deatail ui

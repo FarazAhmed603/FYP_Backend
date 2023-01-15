@@ -29,6 +29,9 @@ router.put("/verifyotp", userController.verifyOtp);
 //forget password
 router.put("/forgetpassword", userController.forgetpassword);
 
+//workerstatus
+router.put("/userstatus", userController.userstatus)
+
 //delete user
 router.delete("/deleteuser/:_id", userController.deleteUser);
 
