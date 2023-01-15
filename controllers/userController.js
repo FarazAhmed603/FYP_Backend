@@ -3,6 +3,7 @@ const otpGenerator = require("otp-generator");
 const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
+const { response } = require("express");
 
 //Create user
 const createUser = async (req, res) => {
@@ -17,20 +18,30 @@ const createUser = async (req, res) => {
       phone: req.body.phone,
       location: req.body.location,
       skill: req.body.skill,
+      cnic: req.body.cnic,
       otp: req.body.otp,
       education: req.body.education,
       profile: req.body.profile,
       description: req.body.description,
       notification: req.body.notification,
       otpverify: false,
+      userstatus: "pending",
     });
     res.status(200).send(newuser);
   } catch (err) {
+
     if (await User.findOne({ email: req.body.email })) {
-      res.status(400).send({
-        message: "Email already exists",
-        error: true
-      })
+      const user = await User.findOne({ email: req.body.email });
+      if (user.otp && !user.otpverify) {
+        const deleteuser = await User.deleteOne({ _id: user._id });
+        createUser(req, res);
+      }
+      else {
+        res.status(400).send({
+          message: "Email already exists",
+          error: true
+        })
+      }
     }
     else { res.status(400).send("data is not found " + err); }
   }
@@ -51,7 +62,6 @@ const getUser = async (req, res) => {
   try {
     const fetchuser = await User.findById(req.params._id);
     res.status(200).send(fetchuser);
-    console.log(fetchuser.otpverify)
   } catch (err) {
     res.status(400).send("user not found " + err);
   }
@@ -72,6 +82,7 @@ const updateUser = async (req, res) => {
       (fetchuser.phone = req.body.phone),
       (fetchuser.location = req.body.location),
       (fetchuser.skill = req.body.skill),
+      (fetchuser.cnic = req.body.cnic),
       (fetchuser.education = req.body.education),
       (fetchuser.profile = req.body.profile),
       (fetchuser.description = req.body.description),
@@ -88,10 +99,9 @@ const deleteUser = async (req, res) => {
 
   try {
     const deleteuser = await User.deleteOne({ _id: req.params._id });
-    console.log(req.params._id)
     res.status(200).json({ Status: "successfull", message: "record deleted" });
   } catch (err) {
-    res.status(400).send("Internal server error " + err + req.params._id);
+    res.status(400).send("Internal server error " + err + " " + req.params._id);
   }
 };
 
@@ -122,7 +132,6 @@ const loginUser = async (req, res) => {
       }
       );
     }
-
     const token = jwt.sign(
       {
         _id: fetchuser._id,
@@ -132,10 +141,12 @@ const loginUser = async (req, res) => {
         phone: fetchuser.phone,
         location: fetchuser.loaction,
         skill: fetchuser.skill,
+        cnic: fetchuser.cnic,
         education: fetchuser.education,
         profile: fetchuser.profile,
         description: fetchuser.description,
         notification: fetchuser.notification,
+        userstatus: fetchuser.userstatus,
       },
       process.env.SECRET_KEY
     );
@@ -149,14 +160,7 @@ const loginUser = async (req, res) => {
 //verify email
 const verifyemail = async (req, res) => {
   try {
-    const Emaill = req.param('email');
-    if (!Emaill) {
-      return res.status(404).send({
-        message: `parameters cannot be empty`,
-        error: true,
-      });
-    }
-    const fetchuser = await User.findOne({ email: Emaill })
+    const fetchuser = await User.findOne({ email: req.params.email })
     if (!fetchuser) {
       return res.status(404).send({
         message: `No user with email found`,
@@ -168,8 +172,8 @@ const verifyemail = async (req, res) => {
         message: "Email exsits"
       })
     }
-  } catch {
-    console.error(err.message);
+  } catch (err) {
+    res.status(400).send("Internal server error  " + err);
   }
 }
 
@@ -190,6 +194,7 @@ const forgetpassword = async (req, res, next) => {
 
     return res.status(200).send({ message: "Password changed successfully" });
   } catch (err) {
+    res.status(400).send("Internal server error " + err);
     console.error(err);
   } finally {
     next();
@@ -283,6 +288,16 @@ const verifyOtp = async (req, res, next) => {
   }
 };
 
+//Set user status
+const userstatus = async (req, res) => {
+  const fetchuser = await User.findOne({ _id: req.params._id })
+  try {
+
+  } catch {
+
+  }
+}
+
 module.exports = {
   createUser,
   getUser,
@@ -294,4 +309,5 @@ module.exports = {
   getAllUser,
   deleteUser,
   verifyemail,
+  userstatus,
 };
