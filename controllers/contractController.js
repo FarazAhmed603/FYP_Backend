@@ -11,38 +11,52 @@ const createContract = async (req, res) => {
         error: true,
       });
     }
-
     const newcontract = await contract.create({
+      createdby: req.body.createdby, // enum client/ skprovider
       userid: req.body.userid,
       workerid: req.body.workerid,
       category: req.body.category,
       title: req.body.title,
       description: req.body.description,
-      worktype: req.body.worktype,
+      worktype: req.body.worktype, //enum online/physical
       jobdate: req.body.jobdate,
       budget: req.body.budget,
       location: req.body.location,
+      payment: req.body.payment, //boolean paymentstatus true/false
     });
     res.status(200).send(newcontract);
   } catch (err) {
-    res.status(400).send("data is not found " + err);
+    res.status(400).send("Internal server error " + err);
   }
 };
 
-//get Contract for user
-const getContract = async (req, res) => {
-  const { userid } = req.body;
+//get contracts that are Allocated 
+const allocatedcontracts = async (req, res) => {
   try {
-    const fetchcontract = await contract.find({ where: { userid } });
+    const fetchcontracts = await contract.find({ workerid: { $exists: true } });
+    res.status(200).send(fetchcontracts);
+  } catch (err) {
+    res.status(400).send({
+      message: "Invalid credentials ",
+      error: true
+    }
+    );
+  }
+}
+
+//get all Contracts 
+const Contracts = async (req, res) => {
+  try {
+    const fetchcontract = await contract.find();
     res.status(200).send(fetchcontract);
   } catch (err) {
     res.status(400).send("contract not found " + err);
   }
 };
 
-//get contract by id
+//get contract by id 
 const getSingleContract = async (req, res) => {
-  const { userid } = req.body;
+
   try {
     const fetchcontract = await contract.findById(req.params._id);
     res.status(200).send(fetchcontract);
@@ -69,6 +83,7 @@ const updateContract = async (req, res) => {
       (fetchcontract.jobdate = req.body.jobdate),
       (fetchcontract.budget = req.body.budget),
       (fetchcontract.location = req.body.location),
+      (fetchcontract.payment = req.body.payment),
       await fetchcontract.save();
     res.status(200).send(fetchcontract);
   } catch (err) {
@@ -88,9 +103,9 @@ const deleteContract = async (req, res) => {
 
 module.exports = {
   createContract,
-  getContract,
+  Contracts,
   getSingleContract,
   deleteContract,
   updateContract,
+  allocatedcontracts,
 };
-

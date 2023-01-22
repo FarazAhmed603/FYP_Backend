@@ -5,8 +5,11 @@ const contractCotroller = require("../controllers/contractController");
 //create contract
 router.post("/newcontract", contractCotroller.createContract);
 
-//get contract
-router.get("/getcontract", contractCotroller.getContract);
+//get contracts
+router.get("/getcontract", contractCotroller.Contracts);
+
+//get Alocated contracts
+router.get("/allocatedcontracts", contractCotroller.allocatedcontracts)
 
 //get single contract
 router.get("/contract/:_id", contractCotroller.getSingleContract);

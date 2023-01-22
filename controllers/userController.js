@@ -13,7 +13,7 @@ const createUser = async (req, res) => {
     const newuser = await User.create({
       firstname: req.body.firstname,
       lastname: req.body.lastname,
-      email: req.body.email,
+      email: req.body.email.toLowerCase(),
       password: hash,
       phone: req.body.phone,
       location: req.body.location,
@@ -25,13 +25,12 @@ const createUser = async (req, res) => {
       description: req.body.description,
       notification: req.body.notification,
       otpverify: false,
-      userstatus: "pending",
     });
     res.status(200).send(newuser);
   } catch (err) {
-    if (await User.findOne({ email: req.body.email })) {
-      const user = await User.findOne({ email: req.body.email });
-      if (user.otp && !user.otpverify) {
+    if (await User.findOne({ email: req.body.email.toLowerCase() })) {
+      const user = await User.findOne({ email: req.body.email.toLowerCase() });
+      if (!user.otpverify) {
         const deleteuser = await User.deleteOne({ _id: user._id });
         createUser(req, res);
       }
@@ -107,7 +106,7 @@ const deleteUser = async (req, res) => {
 //Login user
 const loginUser = async (req, res) => {
   try {
-    const fetchuser = await User.findOne({ email: req.body.email });
+    const fetchuser = await User.findOne({ email: req.body.email.toLowerCase() });
     if (!fetchuser) {
       return res.status(404).send({
         message: `No user found`,
@@ -159,7 +158,7 @@ const loginUser = async (req, res) => {
 //verify email
 const verifyemail = async (req, res) => {
   try {
-    const fetchuser = await User.findOne({ email: req.params.email })
+    const fetchuser = await User.findOne({ email: req.params.email.toLowerCase() })
     if (!fetchuser) {
       return res.status(404).send({
         message: `No user with email found`,
@@ -186,7 +185,7 @@ const forgetpassword = async (req, res, next) => {
         error: true,
       });
     }
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ email: req.body.email.toLowerCase() });
     const hash = await bcrypt.hash(newPassword, 10);
     user.password = hash;
     await user.save();
@@ -217,7 +216,7 @@ const genrateOtp = () => {
 const sendOtpMail = async (req, res, next) => {
   const email = req.body.email;
   const OTP = genrateOtp();
-  const user = await User.findOne({ email: req.body.email });
+  const user = await User.findOne({ email: req.body.email.toLowerCase() });
   const MAIL_SETTINGS = {
     service: "gmail",
     auth: {
@@ -244,7 +243,7 @@ const sendOtpMail = async (req, res, next) => {
           class="container"
           style="max-width: 90%; margin: auto; padding-top: 20px"
         >
-          <h2>Welcome to Invoswift.</h2>
+          <h2>Welcome to Craft.</h2>
           <h4>You are officially In ✔</h4>
           <p style="margin-bottom: 30px;">Please denter the OTP to get started</p>
           <h1 style="font-size: 40px; letter-spacing: 2px; text-align:center;">${OTP}</h1>
@@ -261,7 +260,7 @@ const sendOtpMail = async (req, res, next) => {
 const verifyOtp = async (req, res, next) => {
   const OTP = req.body.otp;
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ email: req.body.email.toLowerCase() });
     if (!user) {
       return res.status(404).send({
         message: `No user with email found`,
@@ -273,7 +272,7 @@ const verifyOtp = async (req, res, next) => {
       await user.save();
       return res.status(200).send({
         message: `OTP verified successfully`,
-        email: req.body.email,
+        email: req.body.email.toLowerCase(),
       });
     }
     else {
@@ -289,11 +288,27 @@ const verifyOtp = async (req, res, next) => {
 
 //Set user status
 const userstatus = async (req, res) => {
-  const fetchuser = await User.findOne({ _id: req.params._id })
   try {
-
-  } catch {
-
+    const fetchuser = await User.findOne({ email: req.body.email.toLowerCase() })
+    if (fetchuser) {
+      fetchuser.userstatus = req.body.userstatus;
+      await fetchuser.save();
+      res.status(200).json({ message: "User status updated " + req.body.userstatus });
+    } else {
+      res.status(401).json({
+        message: "User not exiss",
+        error: true
+      });
+    }
+  } catch (err) {
+    if (!["pending", "block", "verified"].includes(req.body.userstatus)) {
+      res.status(400).json({
+        message: req.body.userstatus + " is not a valid ststus",
+        error: true
+      })
+    } else {
+      res.status(400).send("Internal server error " + err);
+    }
   }
 }
 
