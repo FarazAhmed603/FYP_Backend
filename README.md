@@ -1,4 +1,4 @@
-# service_app
+# CRAFT
 
 All routes can be found under Routes folder respectively seperate by category.
 
