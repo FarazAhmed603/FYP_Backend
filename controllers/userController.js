@@ -21,7 +21,7 @@ const createUser = async (req, res) => {
       cnic: req.body.cnic,
       otp: req.body.otp,
       education: req.body.education,
-      profile: req.body.profile,
+      profile: "https://bootdey.com/img/Content/avatar/avatar6.png",
       description: req.body.description,
       notification: req.body.notification,
       otpverify: false,
