@@ -22,7 +22,7 @@ const createUser = async (req, res) => {
       otp: req.body.otp,
       education: req.body.education,
       profile: "https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png",
-      description: req.body.description,
+      description: "Description",
       notification: req.body.notification,
       otpverify: false,
     });
@@ -137,7 +137,7 @@ const loginUser = async (req, res) => {
         lastname: fetchuser.lastname,
         email: fetchuser.email,
         phone: fetchuser.phone,
-        location: fetchuser.loaction,
+        location: fetchuser.location,
         skill: fetchuser.skill,
         cnic: fetchuser.cnic,
         education: fetchuser.education,
