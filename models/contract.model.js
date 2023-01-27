@@ -1,13 +1,12 @@
 const mongoose = require("mongoose");
 
-
 //creating a schema for contract
 const ContractSchema = new mongoose.Schema(
   {
     createdby: {
       type: String,
       enum: ["client", "skprovider"],
-      required: true
+      required: true,
     },
     userid: { type: String, required: true },
     workerid: { type: String, required: false },
