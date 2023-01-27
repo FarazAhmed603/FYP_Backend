@@ -22,7 +22,7 @@ const createContract = async (req, res) => {
       jobdate: req.body.jobdate,
       budget: req.body.budget,
       location: req.body.location,
-      payment: req.body.payment, //boolean paymentstatus true/false
+      payment: false, //boolean paymentstatus true/false
     });
     res.status(200).send(newcontract);
   } catch (err) {

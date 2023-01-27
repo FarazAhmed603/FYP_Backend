@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     phone: { type: String, required: true },
     cnic: { type: String, required: false },
-    loaction: { type: String, required: false },
+    location: { type: String, required: false },
     skill: [{ type: String, required: false }],
     otp: { type: String, required: false },
     education: { type: String, required: false },
