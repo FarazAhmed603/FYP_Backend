@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+
 //creating a schema for user
 
 const userSchema = new mongoose.Schema(
@@ -27,6 +28,7 @@ const userSchema = new mongoose.Schema(
 
   { collection: "users" }
 );
+
 
 //creating a model for user
 const User = mongoose.model("User", userSchema);

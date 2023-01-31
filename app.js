@@ -6,6 +6,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const userRoutes = require("./routes/userRoutes");
 const contractRoutes = require("./routes/contractRoutes");
+const notificationRoutes = require('./routes/notificationRoutes')
 
 mongoose.connect(
   process.env.DATABASE_STRING,
@@ -22,6 +23,7 @@ const connection = mongoose.connection;
 app.use(cors());
 app.use(bodyParser.json());
 
+app.use('/', notificationRoutes)
 app.use("/", userRoutes);
 app.use("/", contractRoutes);
 

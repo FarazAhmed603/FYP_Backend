@@ -22,7 +22,7 @@ const createUser = async (req, res) => {
       otp: req.body.otp,
       education: req.body.education,
       profile: "https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png",
-      description: "Description",
+      description: req.body.description,
       notification: req.body.notification,
       otpverify: false,
     });
@@ -41,7 +41,7 @@ const createUser = async (req, res) => {
         })
       }
     }
-    else { res.status(400).send("data is not found " + err); }
+    else { res.status(400).send("Internal server error " + err); }
   }
 };
 
@@ -72,6 +72,18 @@ const updateUser = async (req, res) => {
     if (!fetchuser) {
       return res.status(404).send({
         message: `No user found`,
+        error: true,
+      });
+    }
+    if (req.body.phone.length !== 11) {
+      return res.status(404).send({
+        message: `phone check errer`,
+        error: true,
+      });
+    }
+    if (req.body.cnic.length !== 13) {
+      return res.status(404).send({
+        message: `phone check errer`,
         error: true,
       });
     }
@@ -198,6 +210,7 @@ const forgetpassword = async (req, res, next) => {
     next();
   }
 };
+
 
 //genrate OTP
 const genrateOtp = () => {
