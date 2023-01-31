@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema(
     description: { type: String, required: false },
     notification: [{ title: { type: String } }],
     otpverify: { type: Boolean, required: false },
+    DeviceToken: { type: String, required: false },
     userstatus: {
       type: String,
       enum: ["pending", "block", "verified"],

@@ -20,6 +20,9 @@ router.get("/verifyemail/:email", userController.verifyemail);
 //Login
 router.post("/login", userController.loginUser);
 
+//logout
+router.put("/logout/:email", userController.logout);
+
 //send OTP
 router.post("/sendotp", userController.sendOtpMail);
 
