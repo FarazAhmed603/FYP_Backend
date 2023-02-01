@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
     education: { type: String, required: false },
     profile: { type: String, required: false },
     description: { type: String, required: false },
-    notification: [{ title: { type: String } }],
+    notification: [{ title: { type: String }, body: { type: String } }],
     otpverify: { type: Boolean, required: false },
     DeviceToken: { type: String, required: false },
     userstatus: {

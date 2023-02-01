@@ -173,7 +173,7 @@ const loginUser = async (req, res) => {
 const logout = async (req, res) => {
 
   try {
-    const fetchuser = await User.findOne({ email: req.params.email })
+    const fetchuser = await User.findOne({ email: req.params.email.toLowerCase() })
     fetchuser.DeviceToken = "";
     await fetchuser.save();
     if (fetchuser) {
@@ -183,7 +183,7 @@ const logout = async (req, res) => {
       })
     }
   } catch (err) {
-    if (User.findOne({ email: req.params.email })) {
+    if (User.findOne({ email: req.params.email.toLowerCase() })) {
       return res.status(404).send({
         message: "user not found",
         error: true
