@@ -6,12 +6,16 @@ const FCM = require('fcm-node');
 //client sendRequest
 router.post('/clientrequest', notificationController.clientsendRequest)
 
-//sendNotification
-router.post('/sendnotification', notificationController.sendNotification)
-
-
 //skillprovider sendRequest
 router.post('/skrequest', notificationController.skillprovidersendRequest)
 
+//sendNotification
+router.post('/sendnotification', notificationController.sendNotification)
+
+//acceptContract
+router.post('/acceptrequest', notificationController.acceptContract)
+
+//RejectContract
+router.post('/rejectrequest', notificationController.rejectContract)
 
 module.exports = router;

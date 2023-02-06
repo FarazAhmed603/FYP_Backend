@@ -17,7 +17,15 @@ const userSchema = new mongoose.Schema(
     education: { type: String, required: false },
     profile: { type: String, required: false },
     description: { type: String, required: false },
-    notification: [{ title: { type: String }, body: { type: String } }],
+    notification: [{
+      created: { type: Date, default: Date.now },
+      title: { type: String },
+      body: { type: String },
+      status: { type: String },
+      senderid: { type: String },
+      contractid: { type: String },
+      location: { type: String }
+    }],
     otpverify: { type: Boolean, required: false },
     DeviceToken: { type: String, required: false },
     userstatus: {
@@ -29,7 +37,6 @@ const userSchema = new mongoose.Schema(
 
   { collection: "users" }
 );
-
 
 //creating a model for user
 const User = mongoose.model("User", userSchema);
