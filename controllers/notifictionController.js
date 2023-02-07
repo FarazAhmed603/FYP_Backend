@@ -8,13 +8,12 @@ const env = require("dotenv").config();
 
 var admin = require("firebase-admin");
 
-var serviceAccount = require("../fus-craft-19403-firebase-adminsdk-5n9pz-6ac7dbbc5c.json");
+var serviceAccount = require(process.env.FIREDB_key);
 
 admin.initializeApp({
    credential: admin.credential.cert(serviceAccount),
    databaseURL: "https://fus-craft-19403-default-rtdb.firebaseio.com"
 });
-
 
 //const fcm = new FCM(process.env.server_key);
 
