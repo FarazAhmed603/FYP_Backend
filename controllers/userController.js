@@ -43,6 +43,7 @@ const createUser = async (req, res) => {
     } else {
       res.status(400).send("data is not found " + err);
     }
+    else { res.status(400).send("Internal server error " + err); }
   }
 };
 
@@ -76,6 +77,18 @@ const updateUser = async (req, res) => {
         error: true,
       });
     }
+    if (req.body.phone.length !== 11) {
+      return res.status(404).send({
+        message: `phone check errer`,
+        error: true,
+      });
+    }
+    if (req.body.cnic.length !== 13) {
+      return res.status(404).send({
+        message: `phone check errer`,
+        error: true,
+      });
+    }
     (fetchuser.firstname = req.body.firstname),
       (fetchuser.lastname = req.body.lastname),
       (fetchuser.phone = req.body.phone),
@@ -106,21 +119,9 @@ const deleteUser = async (req, res) => {
 //Login user
 const loginUser = async (req, res) => {
   try {
-    const fetchuser = await User.findOne({
-      email: req.body.email.toLowerCase(),
-    });
-    if (!fetchuser) {
-      return res.status(404).send({
-        message: `No user found`,
-        error: true,
-      });
-    }
-    if (!fetchuser.otpverify) {
-      return res.status(404).send({
-        message: `verify your email`,
-        error: true,
-      });
-    }
+    const fetchuser = await User.findOne({ email: req.body.email.toLowerCase() });
+    fetchuser.DeviceToken = req.body.DeviceToken;
+    await fetchuser.save();
     const isPasswordValid = await bcrypt.compare(
       req.body.password,
       fetchuser.password
@@ -152,9 +153,49 @@ const loginUser = async (req, res) => {
 
     res.status(200).json({ Status: "Logged IN", Token: token });
   } catch (err) {
+    const fetchuser = await User.findOne({ email: req.body.email.toLowerCase() });
+    if (!fetchuser) {
+      return res.status(404).send({
+        message: `No user found`,
+        error: true,
+      });
+    } else if (!fetchuser.otpverify) {
+      return res.status(404).send({
+        message: `verify your email`,
+        error: true,
+      });
+    }
     res.status(400).send("Internal server error  " + err);
   }
 };
+
+//user logout
+const logout = async (req, res) => {
+
+  try {
+    const fetchuser = await User.findOne({ email: req.params.email.toLowerCase() })
+    fetchuser.DeviceToken = "";
+    await fetchuser.save();
+    if (fetchuser) {
+      return res.status(200).send({
+        message: "done",
+        error: false
+      })
+    }
+  } catch (err) {
+    if (User.findOne({ email: req.params.email.toLowerCase() })) {
+      return res.status(404).send({
+        message: "user not found",
+        error: true
+      })
+    }
+    res.status(400).send({
+      message: `Internal server Error ${err}`,
+      error: true
+    })
+
+  }
+}
 
 //verify email
 const verifyemail = async (req, res) => {
@@ -200,6 +241,7 @@ const forgetpassword = async (req, res, next) => {
     next();
   }
 };
+
 
 //genrate OTP
 const genrateOtp = () => {
@@ -329,4 +371,5 @@ module.exports = {
   deleteUser,
   verifyemail,
   userstatus,
+  logout,
 };

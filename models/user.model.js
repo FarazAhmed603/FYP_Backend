@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+
 //creating a schema for user
 
 const userSchema = new mongoose.Schema(
@@ -16,8 +17,17 @@ const userSchema = new mongoose.Schema(
     education: { type: String, required: false },
     profile: { type: String, required: false },
     description: { type: String, required: false },
-    notification: [{ title: { type: String } }],
+    notification: [{
+      created: { type: Date, default: Date.now },
+      title: { type: String },
+      body: { type: String },
+      status: { type: String },
+      senderid: { type: String },
+      contractid: { type: String },
+      location: { type: String }
+    }],
     otpverify: { type: Boolean, required: false },
+    DeviceToken: { type: String, required: false },
     userstatus: {
       type: String,
       enum: ["pending", "block", "verified"],
