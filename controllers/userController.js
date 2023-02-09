@@ -21,7 +21,8 @@ const createUser = async (req, res) => {
       cnic: req.body.cnic,
       otp: req.body.otp,
       education: req.body.education,
-      profile: "https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png",
+      profile:
+        "https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_1280.png",
       description: req.body.description,
       notification: req.body.notification,
       otpverify: false,
@@ -33,15 +34,15 @@ const createUser = async (req, res) => {
       if (!user.otpverify) {
         const deleteuser = await User.deleteOne({ _id: user._id });
         createUser(req, res);
-      }
-      else {
+      } else {
         res.status(400).send({
           message: "Email already exists",
-          error: true
-        })
+          error: true,
+        });
       }
+    } else {
+      res.status(400).send("data is not found " + err);
     }
-    else { res.status(400).send("data is not found " + err); }
   }
 };
 
@@ -94,7 +95,6 @@ const updateUser = async (req, res) => {
 
 //delete user
 const deleteUser = async (req, res) => {
-
   try {
     const deleteuser = await User.deleteOne({ _id: req.params._id });
     res.status(200).json({ Status: "successfull", message: "record deleted" });
@@ -106,7 +106,9 @@ const deleteUser = async (req, res) => {
 //Login user
 const loginUser = async (req, res) => {
   try {
-    const fetchuser = await User.findOne({ email: req.body.email.toLowerCase() });
+    const fetchuser = await User.findOne({
+      email: req.body.email.toLowerCase(),
+    });
     if (!fetchuser) {
       return res.status(404).send({
         message: `No user found`,
@@ -126,9 +128,8 @@ const loginUser = async (req, res) => {
     if (!isPasswordValid) {
       return res.status(400).send({
         message: "Invalid credentials ",
-        error: true
-      }
-      );
+        error: true,
+      });
     }
     const token = jwt.sign(
       {
@@ -137,7 +138,7 @@ const loginUser = async (req, res) => {
         lastname: fetchuser.lastname,
         email: fetchuser.email,
         phone: fetchuser.phone,
-        location: fetchuser.loaction,
+        location: fetchuser.location,
         skill: fetchuser.skill,
         cnic: fetchuser.cnic,
         education: fetchuser.education,
@@ -158,22 +159,23 @@ const loginUser = async (req, res) => {
 //verify email
 const verifyemail = async (req, res) => {
   try {
-    const fetchuser = await User.findOne({ email: req.params.email.toLowerCase() })
+    const fetchuser = await User.findOne({
+      email: req.params.email.toLowerCase(),
+    });
     if (!fetchuser) {
       return res.status(404).send({
         message: `No user with email found`,
         error: true,
       });
-    }
-    else {
+    } else {
       return res.status(200).send({
-        message: "Email exsits"
-      })
+        message: "Email exsits",
+      });
     }
   } catch (err) {
     res.status(400).send("Internal server error  " + err);
   }
-}
+};
 
 //forget password
 const forgetpassword = async (req, res, next) => {
@@ -274,8 +276,7 @@ const verifyOtp = async (req, res, next) => {
         message: `OTP verified successfully`,
         email: req.body.email.toLowerCase(),
       });
-    }
-    else {
+    } else {
       return res.status(404).send({
         message: `Invalid OTP`,
         error: true,
@@ -289,28 +290,32 @@ const verifyOtp = async (req, res, next) => {
 //Set user status
 const userstatus = async (req, res) => {
   try {
-    const fetchuser = await User.findOne({ email: req.body.email.toLowerCase() })
+    const fetchuser = await User.findOne({
+      email: req.body.email.toLowerCase(),
+    });
     if (fetchuser) {
       fetchuser.userstatus = req.body.userstatus;
       await fetchuser.save();
-      res.status(200).json({ message: "User status updated " + req.body.userstatus });
+      res
+        .status(200)
+        .json({ message: "User status updated " + req.body.userstatus });
     } else {
       res.status(401).json({
         message: "User not exiss",
-        error: true
+        error: true,
       });
     }
   } catch (err) {
     if (!["pending", "block", "verified"].includes(req.body.userstatus)) {
       res.status(400).json({
         message: req.body.userstatus + " is not a valid ststus",
-        error: true
-      })
+        error: true,
+      });
     } else {
       res.status(400).send("Internal server error " + err);
     }
   }
-}
+};
 
 module.exports = {
   createUser,

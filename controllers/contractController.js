@@ -26,11 +26,15 @@ const createContract = async (req, res) => {
     });
     res.status(200).send(newcontract);
   } catch (err) {
-    res.status(400).send("Internal server error " + err);
+    res.status(400).send({
+      message: "Invalid credentials ",
+      data: req.body,
+      error: err,
+    });
   }
 };
 
-//get contracts that are Allocated 
+//get contracts that are Allocated
 const allocatedcontracts = async (req, res) => {
   try {
     const fetchcontracts = await contract.find({ workerid: { $exists: true } });
@@ -38,13 +42,12 @@ const allocatedcontracts = async (req, res) => {
   } catch (err) {
     res.status(400).send({
       message: "Invalid credentials ",
-      error: true
-    }
-    );
+      error: true,
+    });
   }
-}
+};
 
-//get all Contracts 
+//get all Contracts
 const Contracts = async (req, res) => {
   try {
     const fetchcontract = await contract.find();
@@ -54,9 +57,8 @@ const Contracts = async (req, res) => {
   }
 };
 
-//get contract by id 
+//get contract by id
 const getSingleContract = async (req, res) => {
-
   try {
     const fetchcontract = await contract.findById(req.params._id);
     res.status(200).send(fetchcontract);
